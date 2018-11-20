@@ -26,10 +26,9 @@ d3.csv(fileName, function(error, data) {
       return d.key;
     });
 
-  var selectRegion;
   var currentRegion;
-  var currentLocale;
-  var empty = [" "];
+  var alllocale = [" ","Distant Rural", "Distant Town", "Fringe Rural", "Fringe Town", "Large City", "Large Suburb", "Mid-size City", "Mid-size Suburb", "Remote Rural", "Remote Town", "Small City", "Small Suburb"];
+
   dropregion.on('change', function() {
     currentRegion = this.value;
     selectRegion = data.filter(function(d) {
@@ -40,24 +39,11 @@ d3.csv(fileName, function(error, data) {
       .remove();
 
     droplocale.selectAll('option')
-      .data(empty)
-      .enter()
-      .append('option');
-
-    selectRegion = selectRegion.sort(function(a, b) {
-      if (a.Locale < b.Locale) return -1;
-      if (a.Locale > b.Locale) return 1;
-      return 0;
-    })
-
-    droplocale.selectAll('option')
-      .data(selectRegion, function(d) {
-        return d;
-      })
+      .data(alllocale)
       .enter()
       .append('option')
       .text(function(d) {
-        return d.Locale;
+        return d;
       });
 
     droplocale.on('change', function() {
