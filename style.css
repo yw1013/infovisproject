@@ -1,6 +1,6 @@
 * {
-    margin:0;
-    padding:0;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -24,12 +24,12 @@ body {
 }
 
 .dot {
-  stroke: black;
+  fill-opacity: .5;
 }
 
 .clicked {
-  fill: red;
-  stroke: red;
+  stroke: black;
+  fill-opacity: 1;
 }
 
 .tooltip {
@@ -43,27 +43,17 @@ body {
   border-radius: 8px;
   pointer-events: none;
   padding: 5px;
-
 }
 
-#dropdiv {
-  clear: both;
+.background path {
+  fill: none;
+  stroke: none;
+  stroke-width: 20px;
+  pointer-events: stroke;
 }
 
-#wrapper {
-  clear: both;
-}
-
-#score {
-  float: left;
-}
-
-#chart2 {
-  float: left;
-}
-
-#chart3 {
-  float: left;
-  margin-top: 30px;
-  margin-left: 20px;
+.foreground path {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
 }
