@@ -2,3 +2,72 @@
     margin:0;
     padding:0;
 }
+
+body {
+  font: 12px sans-serif;
+}
+
+.tick>line {
+  fill: none;
+  stroke: black;
+}
+
+.tick>text {
+  fill: black;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: black;
+}
+
+.clicked {
+  fill: red;
+  stroke: red;
+}
+
+.hovered {
+  fill: pink;
+  stroke: red;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 100px;
+  height: 50px;
+  padding: 2px;
+  font: 10px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+#dropdiv {
+  clear: both;
+}
+
+#wrapper {
+  clear: both;
+}
+
+#score {
+  float: left;
+}
+
+#chart2 {
+  float: left;
+}
+
+#chart3 {
+  float: left;
+  margin-top: 30px;
+  margin-left: 20px;
+}
