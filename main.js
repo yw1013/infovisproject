@@ -164,8 +164,7 @@ d3.csv(fileName, function(error, data) {
       d['ACT Median'] = +d['ACT Median'];
     });
 
-    var div = d3.select("#score")
-      .append("div")
+    var tooltip = d3.select("#score").append("div")
       .attr("class", "tooltip")
       .style("opacity", 0);
 
@@ -182,16 +181,18 @@ d3.csv(fileName, function(error, data) {
         return yScale(d['ACT Median']);
       })
       .on("mouseover", function(d) {
-        div.transition()
+        var html = d.Name + "<br/>" + "SAT Avg: " + d['SAT Average'] + "<br/>" + "ACT Med: " + d['ACT Median'];
+        tooltip.html(html)
+          .style("left", (d3.event.pageX + 15) + "px")
+          .style("top", (d3.event.pageY - 28) + "px")
+          .transition()
           .duration(200)
-          .style("opacity", .9);
-        div.html(d.Name + "<br/>" + "SAT Avg: " + d['SAT Average']+ "<br/>" + "ACT Med: " + d['ACT Median'])
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
+          .style("opacity", .9)
+
       })
       .on("mouseout", function(d) {
-        div.transition()
-          .duration(500)
+        tooltip.transition()
+          .duration(300)
           .style("opacity", 0);
       })
       .on("click", function(d, i) {
@@ -216,29 +217,6 @@ d3.csv(fileName, function(error, data) {
           .classed("clicked", true);
 
       });
-    //
-    //   score.append("g")
-    //     .attr("class", "x axis")
-    //     .attr("transform", "translate(0," + height + ")")
-    //     .call(xAxis)
-    //     .append("text")
-    //     .attr("class", "label")
-    //     .attr("x", width)
-    //     .attr("y", -6)
-    //     .style("text-anchor", "end")
-    //     .text("SAT");
-    //
-    //   score.append("g")
-    //     .attr("class", "y axis")
-    //     .call(yAxis)
-    //     .append("text")
-    //     .attr("class", "label")
-    //     .attr("transform", "rotate(-90)")
-    //     .attr("y", 6)
-    //     .attr("dy", ".71em")
-    //     .style("text-anchor", "end")
-    //     .text("ACT");
-
   };
 
 });

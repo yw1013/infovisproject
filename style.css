@@ -32,22 +32,18 @@ body {
   stroke: red;
 }
 
-.hovered {
-  fill: pink;
-  stroke: red;
-}
-
-div.tooltip {
+.tooltip {
   position: absolute;
-  text-align: center;
-  width: 100px;
-  height: 50px;
-  padding: 2px;
   font: 10px sans-serif;
+  width: auto;
+  height: auto;
+  pointer-events: none;
   background: lightsteelblue;
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
+  padding: 5px;
+
 }
 
 #dropdiv {
