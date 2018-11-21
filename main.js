@@ -10,23 +10,54 @@ var margin = {
   height = 300 - margin.top - margin.bottom;
 
 d3.csv(fileName, function(error, data) {
-  if (error) throw error;
+  if (error) throw serror;
 
   // dropdowns
-  var dropregion = d3.select("#dropregion");
-  var droplocale = d3.select("#droplocale");
+  var dropregion = d3.select("#dropregion"),
+    droplocale = d3.select("#droplocale"),
+    dropschool = d3.select("#dropschool"),
+    defaultdropdown = "----------";
 
-  var region = d3.nest()
-    .key(function(d) {
+  dropregion.selectAll("option")
+    .remove();
+  dropregion.append("option")
+    .text(defaultdropdown);
+  droplocale.selectAll("option")
+    .remove();
+  droplocale.append("option")
+    .text(defaultdropdown)
+  dropschool.selectAll("option")
+    .remove();
+  dropschool.append("option")
+    .text(defaultdropdown);
+
+  var region = d3.nest().key(function(d) {
       return d.Region;
-    })
-    .entries(data);
+    }).entries(data),
+    locale = d3.nest().key(function(d) {
+      return d.Locale;
+    }).entries(data),
+    school = d3.nest().key(function(d) {
+      return d.Name;
+    }).entries(data);
 
   region = region.sort(function(a, b) {
     if (a.key < b.key) return -1;
     if (a.key > b.key) return 1;
     return 0;
-  })
+  });
+
+  locale = locale.sort(function(a, b) {
+    if (a.key < b.key) return -1;
+    if (a.key > b.key) return 1;
+    return 0;
+  });
+
+  school = school.sort(function(a, b) {
+    if (a.key < b.key) return -1;
+    if (a.key > b.key) return 1;
+    return 0;
+  });
 
   dropregion.selectAll("option")
     .data(region, function(d) {
@@ -38,38 +69,138 @@ d3.csv(fileName, function(error, data) {
       return d.key;
     });
 
-  var alllocale = ["----------", "Distant Rural", "Distant Town", "Fringe Rural", "Fringe Town", "Large City", "Large Suburb", "Mid-size City", "Mid-size Suburb", "Remote Rural", "Remote Town", "Small City", "Small Suburb"];
+  droplocale.selectAll("option")
+    .data(locale, function(d) {
+      return d;
+    })
+    .enter()
+    .append("option")
+    .text(function(d) {
+      return d.key;
+    });
+
+  dropschool.selectAll("option")
+    .data(school, function(d) {
+      return d;
+    })
+    .enter()
+    .append("option")
+    .text(function(d) {
+      return d.key;
+    });
+
+  var currentRegion = defaultdropdown,
+    currentLocale = defaultdropdown,
+    currentSchool = defaultdropdown,
+    selectRegion;
 
   dropregion.on("change", function() {
-    var currentRegion = this.value;
+    currentRegion = this.value;
     selectRegion = data.filter(function(d) {
+      if (currentRegion == defaultdropdown) {
+        currentLocale = defaultdropdown;
+        currentSchool = defaultdropdown;
+        return d;
+      }
       return d["Region"] == currentRegion;
     });
 
-    scoredetails(selectRegion);
+    scoreplots(selectRegion);
 
     droplocale.selectAll("option")
       .remove();
+    droplocale.append("option")
+      .text(defaultdropdown);
+    dropschool.selectAll("option")
+      .remove();
+    dropschool.append("option")
+      .text(defaultdropdown);
 
     droplocale.selectAll("option")
-      .data(alllocale)
+      .data(locale, function(d) {
+        return d;
+      })
       .enter()
       .append("option")
       .text(function(d) {
-        return d;
+        return d.key;
       });
 
-    droplocale.on("change", function() {
-      currentLocale = this.value;
-      selectLocale = data.filter(function(d) {
-        if (currentLocale == "----------") {
+    dropschool.selectAll("option")
+      .data(selectRegion, function(d) {
+        return d;
+      })
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return d.Name;
+      });
+
+  })
+
+  droplocale.on("change", function() {
+    currentLocale = this.value;
+    selectLocale = data.filter(function(d) {
+      if (currentLocale == defaultdropdown) {
+        currentSchool = defaultdropdown;
+        if (currentRegion == defaultdropdown && currentSchool == defaultdropdown) {
+          return d;
+        } else if (currentRegion != defaultdropdown && currentSchool == defaultdropdown) {
           return d["Region"] == currentRegion;
         }
-        return (d["Region"] == currentRegion && d["Locale"] == currentLocale);
-      })
-
-      scoredetails(selectLocale);
+      } else if (currentRegion == defaultdropdown && currentSchool == defaultdropdown) {
+        return d["Locale"] == currentLocale;
+      }
+      return d["Region"] == currentRegion && d["Locale"] == currentLocale;
     })
+
+    scoreplots(selectLocale);
+
+    dropschool.selectAll("option")
+      .remove();
+    dropschool.append("option")
+      .text(defaultdropdown);
+
+    if (currentLocale != defaultdropdown) {
+      dropschool.selectAll("option")
+        .data(selectLocale, function(d) {
+          return d;
+        })
+        .enter()
+        .append("option")
+        .text(function(d) {
+          return d.Name;
+        });
+    } else {
+      dropschool.selectAll("option")
+        .data(selectRegion, function(d) {
+          return d;
+        })
+        .enter()
+        .append("option")
+        .text(function(d) {
+          return d.Name;
+        });
+    }
+  })
+
+  dropschool.on("change", function() {
+    currentSchool = this.value;
+    selectSchool = data.filter(function(d) {
+      if (currentSchool == defaultdropdown) {
+        if (currentRegion == defaultdropdown && currentLocale == defaultdropdown) {
+          return d;
+        } else if (currentRegion != defaultdropdown && currentLocale == defaultdropdown) {
+          return d["Region"] == currentRegion;
+        } else if (currentRegion != defaultdropdown && currentLocale != defaultdropdown) {
+          return d["Region"] == currentRegion && d["Locale"] == currentLocale;
+        } else if (currentRegion == defaultdropdown && currentLocale != defaultdropdown) {
+          return d["Locale"] == currentLocale;
+        }
+      }
+      return d["Name"] == currentSchool;
+    })
+    scoreplots(selectSchool);
   })
 
   //score scatter plot
@@ -115,11 +246,11 @@ d3.csv(fileName, function(error, data) {
   var svglegend = d3.select("#score")
     .append("svg")
     .attr("class", 'svglegend')
-    .attr("width", 120)
+    .attr("width", 100)
     .attr("height", 300)
-    .attr("transform", "translate(" + 0 + "," + 20 + ")");
+    .attr("transform", "translate(" + 10 + "," + 20 + ")");
 
-  function scoredetails(data) {
+  function scoreplots(data) {
     d3.selectAll("circle").remove();
 
     data.forEach(function(d) {
@@ -137,7 +268,7 @@ d3.csv(fileName, function(error, data) {
       .append("circle")
       .classed("dot", true)
       .attr("r", function(d) {
-        return d["Admission Rate"] * 10;
+        return Math.sqrt(d["Admission Rate"]) * 8;
       })
       .attr("cx", function(d) {
         return xScale(d["SAT Average"]);
@@ -153,13 +284,13 @@ d3.csv(fileName, function(error, data) {
       .on("click", scoreclick);
 
     function scoremouseover(d) {
-      var html = d.Name + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
+      var html = d.Name + "<br/>" +  d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
       tooltip.html(html)
         .style("left", (d3.event.pageX + 15) + "px")
         .style("top", (d3.event.pageY - 28) + "px")
         .transition()
         .duration(200)
-        .style("opacity", .9)
+        .style("opacity", .9);
     }
 
     function scoremouseout(d) {
@@ -169,17 +300,6 @@ d3.csv(fileName, function(error, data) {
     }
 
     function scoreclick(d, i) {
-      var sat = d["SAT Average"];
-      var act = d["ACT Median"];
-      var name = d["Name"];
-
-      d3.select("#sat")
-        .text(sat);
-      d3.select("#act")
-        .text(act);
-      d3.select("#name")
-        .text(name);
-
       score.selectAll("circle")
         .filter(function(d) {
           return d["SAT Average"] != sat || d["ACT Median"] != act;
@@ -192,6 +312,7 @@ d3.csv(fileName, function(error, data) {
         })
         .classed("clicked", true);
 
+      schooldetails(d, i);
     }
 
     var legend = svglegend.selectAll(".legend")
@@ -205,17 +326,35 @@ d3.csv(fileName, function(error, data) {
 
     legend.append("rect")
       .attr("x", 0)
-      .attr("width", 18)
-      .attr("height", 18)
+      .attr("width", 10)
+      .attr("height", 10)
       .style("fill", color);
 
     legend.append("text")
-      .attr("x", 30)
-      .attr("y", 9)
+      .attr("x", 15)
+      .attr("y", 5)
       .attr("dy", ".35em")
       .style("text-anchor", "start")
+      .style("fill", color)
       .text(function(d) {
         return d;
       });
+
+    function schooldetails(d) {
+      var sat = d["SAT Average"],
+        act = d["ACT Median"],
+        name = d["Name"];
+
+      d3.select("#sat")
+        .text(sat);
+      d3.select("#act")
+        .text(act);
+      d3.select("#name")
+        .text(name);
+
+    }
   };
+
+  scoreplots(data);
+
 });
