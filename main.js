@@ -250,6 +250,14 @@ d3.csv(fileName, function(error, data) {
     .attr("height", 300)
     .attr("transform", "translate(" + 10 + "," + 20 + ")");
 
+  var pie = d3.select("#piechart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
   function scoreplots(data) {
     d3.selectAll("circle").remove();
 
@@ -284,7 +292,7 @@ d3.csv(fileName, function(error, data) {
       .on("click", scoreclick);
 
     function scoremouseover(d) {
-      var html = d.Name + "<br/>" +  d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
+      var html = d.Name + "<br/>" + d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
       tooltip.html(html)
         .style("left", (d3.event.pageX + 15) + "px")
         .style("top", (d3.event.pageY - 28) + "px")
