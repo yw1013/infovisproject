@@ -367,13 +367,13 @@ d3.csv(fileName, function(error, data) {
         .text("Median Earnings");
 
 
-    var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
-
-    var parallelPlot = parallel.selectAll(".line")
-        .data(data)
-        .enter()
-        .append("path")
-        .attr("d", parallelFunction(data));
+    // var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
+    //
+    // var parallelPlot = parallel.selectAll(".line")
+    //     .data(data)
+    //     .enter()
+    //     .append("path")
+    //     .attr("d", parallelFunction(data));
 
     //End
 
@@ -562,7 +562,7 @@ d3.csv(fileName, function(error, data) {
           .attr("transform", "translate(35,"+barYScale(d['Admission Rate'])+")")
           .attr("height",(barYScale(d['Admission Rate'])))
           .attr("width", "50")
-          .attr("fill", color(d.Locale));
+          .attr("fill", scolor(d.Locale));
     //append average bar
       var mean = d3.mean(data,function(d) { return +d['Admission Rate']});
     barchart.append("g")
