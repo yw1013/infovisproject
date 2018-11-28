@@ -12,6 +12,65 @@ var margin = {
 d3.csv(fileName, function(error, data) {
   if (error) throw serror;
 
+  var white = d3.sum(data.map(function(d) {
+      return +d['% White'];
+    })),
+    black = d3.sum(data.map(function(d) {
+      return +d['% Black'];
+    })),
+    hispanic = d3.sum(data.map(function(d) {
+      return +d['% Hispanic'];
+    })),
+    asian = d3.sum(data.map(function(d) {
+      return +d['% Asian'];
+    })),
+    indian = d3.sum(data.map(function(d) {
+      return +d['% American Indian'];
+    })),
+    pacific = d3.sum(data.map(function(d) {
+      return +d['% Pacific Islander'];
+    })),
+    biracial = d3.sum(data.map(function(d) {
+      return +d['% Biracial'];
+    })),
+    nonresident = d3.sum(data.map(function(d) {
+      return +d['% Nonresident Aliens'];
+    }));
+
+  var totalRace = [{
+      race: "White",
+      value: white
+    },
+    {
+      race: "Black",
+      value: black
+    },
+    {
+      race: "Hispanic",
+      value: hispanic
+    },
+    {
+      race: "Asian",
+      value: asian
+    },
+    {
+      race: "American Indian",
+      value: indian
+    },
+    {
+      race: "Pacific Islander",
+      value: pacific
+    },
+    {
+      race: "Biracial",
+      value: biracial
+    },
+    {
+      race: "Nonresident Alien",
+      value: nonresident
+    }
+  ];
+
   // dropdowns
   var dropregion = d3.select("#dropregion"),
     droplocale = d3.select("#droplocale"),
@@ -210,7 +269,7 @@ d3.csv(fileName, function(error, data) {
   var xAxis = d3.axisBottom().scale(xScale);
   var yAxis = d3.axisLeft().scale(yScale);
 
-  var color = d3.scaleOrdinal(d3.schemeCategory20);
+  var scolor = d3.scaleOrdinal(d3.schemeCategory20);
 
   var score = d3.select("#score")
     .append("svg")
@@ -250,14 +309,6 @@ d3.csv(fileName, function(error, data) {
     .attr("height", 300)
     .attr("transform", "translate(" + 10 + "," + 20 + ")");
 
-  var pie = d3.select("#piechart")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
   function scoreplots(data) {
     d3.selectAll("circle").remove();
 
@@ -266,7 +317,7 @@ d3.csv(fileName, function(error, data) {
       d["ACT Median"] = +d["ACT Median"];
     });
 
-    var tooltip = d3.select("#score").append("div")
+    var stooltip = d3.select("#score").append("div")
       .classed("tooltip", true)
       .style("opacity", 0);
 
@@ -285,7 +336,7 @@ d3.csv(fileName, function(error, data) {
         return yScale(d["ACT Median"]);
       })
       .style("fill", function(d) {
-        return color(d.Locale);
+        return scolor(d.Locale);
       })
       .on("mouseover", scoremouseover)
       .on("mouseout", scoremouseout)
@@ -293,7 +344,7 @@ d3.csv(fileName, function(error, data) {
 
     function scoremouseover(d) {
       var html = d.Name + "<br/>" + d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
-      tooltip.html(html)
+      stooltip.html(html)
         .style("left", (d3.event.pageX + 15) + "px")
         .style("top", (d3.event.pageY - 28) + "px")
         .transition()
@@ -302,7 +353,7 @@ d3.csv(fileName, function(error, data) {
     }
 
     function scoremouseout(d) {
-      tooltip.transition()
+      stooltip.transition()
         .duration(300)
         .style("opacity", 0);
     }
@@ -321,10 +372,53 @@ d3.csv(fileName, function(error, data) {
         .classed("clicked", true);
 
       schooldetails(d, i);
+
+      white = +d['% White'];
+      black = +d['% Black'];
+      hispanic = +d['% Hispanic'];
+      asian = +d['% Asian'];
+      indian = +d['% American Indian'];
+      pacific = +d['% Pacific Islander'];
+      biracial = +d['% Biracial'];
+      nonresident = +d['% Nonresident Aliens'];
+      totalRace = [{
+          race: "White",
+          value: white
+        },
+        {
+          race: "Black",
+          value: black
+        },
+        {
+          race: "Hispanic",
+          value: hispanic
+        },
+        {
+          race: "Asian",
+          value: asian
+        },
+        {
+          race: "American Indian",
+          value: indian
+        },
+        {
+          race: "Pacific Islander",
+          value: pacific
+        },
+        {
+          race: "Biracial",
+          value: biracial
+        },
+        {
+          race: "Nonresident Alien",
+          value: nonresident
+        }
+      ];
+      racepie(totalRace);
     }
 
     var legend = svglegend.selectAll(".legend")
-      .data(color.domain())
+      .data(scolor.domain())
       .enter()
       .append("g")
       .attr("class", "legend")
@@ -336,14 +430,14 @@ d3.csv(fileName, function(error, data) {
       .attr("x", 0)
       .attr("width", 10)
       .attr("height", 10)
-      .style("fill", color);
+      .style("fill", scolor);
 
     legend.append("text")
       .attr("x", 15)
       .attr("y", 5)
       .attr("dy", ".35em")
       .style("text-anchor", "start")
-      .style("fill", color)
+      .style("fill", scolor)
       .text(function(d) {
         return d;
       });
@@ -364,5 +458,135 @@ d3.csv(fileName, function(error, data) {
   };
 
   scoreplots(data);
+
+  var pwidth = 200,
+    pheight = 200,
+    radius = Math.min(width, height) / 2;
+
+  var pcolor = d3.scaleOrdinal(d3.schemeCategory20b);
+
+  var piechart = d3.select("#piechart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + 150 + "," + 150 + ")");
+
+  piechart.append("g")
+    .attr("class", "slices");
+  piechart.append("g")
+    .attr("class", "labelName");
+  piechart.append("g")
+    .attr("class", "labelValue");
+  piechart.append("g")
+    .attr("class", "lines");
+
+  var pie = d3.pie()
+    .sort(null)
+    .value(function(d) {
+      return d.value;
+    });
+
+  var arc = d3.arc()
+    .outerRadius(radius * 0.8)
+    .innerRadius(radius * 0.4);
+
+  var outerArc = d3.arc()
+    .innerRadius(radius * 0.9)
+    .outerRadius(radius * 0.9);
+
+  var legendRectSize = (radius * 0.05);
+  var legendSpacing = radius * 0.02;
+
+  var pielegend = d3.select("#piechart")
+    .append("svg")
+    .attr("class", 'pielegend')
+    .attr("width", 100)
+    .attr("height", 300)
+    .attr("transform", "translate(" + 10 + "," + 20 + ")");
+
+  var ptooltip = d3.select("#piechart")
+    .append("div")
+    .classed("tooltip", true)
+    .style("opacity", 0);
+
+  function racepie(data) {
+    console.log(data);
+
+    var slice = piechart
+      .select(".slices")
+      .selectAll("path.slice")
+      .data(pie(data), function(d) {
+        return d.data.race;
+      });
+
+    slice.enter()
+      .insert("path")
+      .style("fill", function(d) {
+        return pcolor(d.data.race);
+      })
+      .style("opacity", 0.7)
+      .attr("class", "slice")
+      .transition().duration(1000)
+      .attr("d", arc);
+      // .attrTween("d", function(d) {
+      //   this._current = this._current || d;
+      //   var interpolate = d3.interpolate(this._current, d);
+      //   this._current = interpolate(0);
+      //   return function(t) {
+      //     return arc(interpolate(t));
+      //   };
+      // });
+
+    // slice
+    //   .on("mouseover", function(d) {
+    //     console.log("hi");
+    //
+    //     var html = (d.data.race) + "<br>" + (d.data.value) + "%";
+    //     ptooltip.html(html)
+    //       .style("left", (d3.event.pageX + 15) + "px")
+    //       .style("top", (d3.event.pageY - 28) + "px")
+    //       .transition()
+    //       .duration(200)
+    //       .style("opacity", .9);
+    //   })
+    //   .on("mouseout", function(d) {
+    //     ptooltip.transition()
+    //       .duration(300)
+    //       .style("opacity", 0);
+    //
+    //
+    //   });
+
+    slice.exit()
+      .remove();
+
+    var racelegend = pielegend.selectAll(".legend")
+      .data(pcolor.domain()).enter()
+      .append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) {
+        return "translate(0," + i * 20 + ")";
+      });
+
+    racelegend.append("rect")
+      .attr("x", 0)
+      .attr("width", 10)
+      .attr("height", 10)
+      .style("fill", pcolor)
+      .style('stroke', pcolor);
+
+    racelegend.append("text")
+      .attr("x", 15)
+      .attr("y", 5)
+      .attr("dy", ".35em")
+      .style("text-anchor", "start")
+      .style("fill", pcolor)
+      .text(function(d) {
+        return d;
+      });
+  }
+
+  racepie(totalRace);
 
 });
