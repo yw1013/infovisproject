@@ -309,6 +309,74 @@ d3.csv(fileName, function(error, data) {
     .attr("height", 300)
     .attr("transform", "translate(" + 10 + "," + 20 + ")");
 
+  /*
+    Parallel coordinates plot
+   */
+    var MedFamIncome_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {return d['Median Family Income'];})]).range([height, 0]);
+    var AverageCost_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {return d['Average Cost'];})]).range([height, 0]);
+    var MedEarnings_YScale = d3.scaleLinear().domain([0,d3.max(data, function(d) {return d['Median Earnings 8 years After Entry'];})]).range([height, 0]);
+
+
+    var parallel_Y1Axis = d3.axisLeft().scale(MedFamIncome_YScale);
+    var parallel_Y2Axis = d3.axisRight().scale(AverageCost_YScale);
+    var parallel_Y3Axis = d3.axisRight().scale(MedEarnings_YScale);
+
+    var parallel = d3.select("#parallel")
+        .append("svg")
+        .attr("width", width*2 + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    parallel.append("g")
+        .classed("y axis", true)
+        .call(parallel_Y1Axis)
+        .append("text")
+        .classed("label", true)
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .style("fill", "black")
+        .text("Median Family Income");
+
+    parallel.append("g")
+        .attr("transform", "translate(200,0)")
+        .classed("y axis", true)
+        .call(parallel_Y2Axis)
+        .append("text")
+        .classed("label", true)
+        .attr("transform", "rotate(-90)")
+        .attr("y", 50)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .style("fill", "black")
+        .text("Average Cost");
+
+    parallel.append("g")
+        .attr("transform", "translate(400,0)")
+        .classed("y axis", true)
+        .call(parallel_Y3Axis)
+        .append("text")
+        .classed("label", true)
+        .attr("transform", "rotate(-90)")
+        .attr("y", 50)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .style("fill", "black")
+        .text("Median Earnings");
+
+
+    var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
+
+    var parallelPlot = parallel.selectAll(".line")
+        .data(data)
+        .enter()
+        .append("path")
+        .attr("d", parallelFunction(data));
+
+    //End
+
   function scoreplots(data) {
     d3.selectAll("circle").remove();
 
@@ -415,6 +483,7 @@ d3.csv(fileName, function(error, data) {
         }
       ];
       racepie(totalRace);
+      barChart(d);
     }
 
     var legend = svglegend.selectAll(".legend")
@@ -456,6 +525,51 @@ d3.csv(fileName, function(error, data) {
 
     }
   };
+
+  function barChart(d) {
+      //bar chart
+      var barchart = d3.select('#barchart')
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      //populate axes
+      var barYScale = d3.scaleLinear().domain([0, 1]).range([height, 0]);
+      var schools = [d['Name'], "Average"];
+      var barXScale = d3.scaleBand().domain(schools).range([0, width]);
+      var barYAxis = d3.axisLeft().scale(barYScale);
+      var barXAxis = d3.axisBottom().scale(barXScale);
+      barchart.append("g")
+          .classed("y axis", true)
+          .call(barYAxis)
+          .append("text")
+          .classed("label", true)
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .style("fill", "black")
+          .text("Admission Rate");
+
+      barchart.append("g")
+          .call(barXAxis)
+          .attr("transform","translate(0,250)");
+      //append specific school bar
+      //TODO: some fix height scale
+    barchart.append("g")
+          .append("rect")
+          .attr("transform", "translate(35,"+barYScale(d['Admission Rate'])+")")
+          .attr("height",(barYScale(d['Admission Rate'])))
+          .attr("width", "50")
+          .attr("fill", color(d.Locale));
+    //append average bar
+      var mean = d3.mean(data,function(d) { return +d['Admission Rate']});
+    barchart.append("g")
+        .append("rect")
+        .attr("transform", "translate(155,"+barYScale(mean)+")")
+        .attr("height",(barYScale(mean)))
+        .attr("width", "50");  }
 
   scoreplots(data);
 
