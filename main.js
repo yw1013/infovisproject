@@ -11,66 +11,6 @@ var margin = {
 
 d3.csv(fileName, function(error, data) {
   if (error) throw serror;
-
-  var white = d3.sum(data.map(function(d) {
-      return +d['% White'];
-    })),
-    black = d3.sum(data.map(function(d) {
-      return +d['% Black'];
-    })),
-    hispanic = d3.sum(data.map(function(d) {
-      return +d['% Hispanic'];
-    })),
-    asian = d3.sum(data.map(function(d) {
-      return +d['% Asian'];
-    })),
-    indian = d3.sum(data.map(function(d) {
-      return +d['% American Indian'];
-    })),
-    pacific = d3.sum(data.map(function(d) {
-      return +d['% Pacific Islander'];
-    })),
-    biracial = d3.sum(data.map(function(d) {
-      return +d['% Biracial'];
-    })),
-    nonresident = d3.sum(data.map(function(d) {
-      return +d['% Nonresident Aliens'];
-    }));
-
-  var totalRace = [{
-      race: "White",
-      value: white
-    },
-    {
-      race: "Black",
-      value: black
-    },
-    {
-      race: "Hispanic",
-      value: hispanic
-    },
-    {
-      race: "Asian",
-      value: asian
-    },
-    {
-      race: "American Indian",
-      value: indian
-    },
-    {
-      race: "Pacific Islander",
-      value: pacific
-    },
-    {
-      race: "Biracial",
-      value: biracial
-    },
-    {
-      race: "Nonresident Alien",
-      value: nonresident
-    }
-  ];
-
   // dropdowns
   var dropregion = d3.select("#dropregion"),
     droplocale = d3.select("#droplocale"),
@@ -312,70 +252,76 @@ d3.csv(fileName, function(error, data) {
   /*
     Parallel coordinates plot
    */
-    var MedFamIncome_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {return d['Median Family Income'];})]).range([height, 0]);
-    var AverageCost_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {return d['Average Cost'];})]).range([height, 0]);
-    var MedEarnings_YScale = d3.scaleLinear().domain([0,d3.max(data, function(d) {return d['Median Earnings 8 years After Entry'];})]).range([height, 0]);
+  var MedFamIncome_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+    return d['Median Family Income'];
+  })]).range([height, 0]);
+  var AverageCost_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+    return d['Average Cost'];
+  })]).range([height, 0]);
+  var MedEarnings_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+    return d['Median Earnings 8 years After Entry'];
+  })]).range([height, 0]);
 
 
-    var parallel_Y1Axis = d3.axisLeft().scale(MedFamIncome_YScale);
-    var parallel_Y2Axis = d3.axisRight().scale(AverageCost_YScale);
-    var parallel_Y3Axis = d3.axisRight().scale(MedEarnings_YScale);
+  var parallel_Y1Axis = d3.axisLeft().scale(MedFamIncome_YScale);
+  var parallel_Y2Axis = d3.axisRight().scale(AverageCost_YScale);
+  var parallel_Y3Axis = d3.axisRight().scale(MedEarnings_YScale);
 
-    var parallel = d3.select("#parallel")
-        .append("svg")
-        .attr("width", width*2 + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var parallel = d3.select("#parallel")
+    .append("svg")
+    .attr("width", width * 2 + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    parallel.append("g")
-        .classed("y axis", true)
-        .call(parallel_Y1Axis)
-        .append("text")
-        .classed("label", true)
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("fill", "black")
-        .text("Median Family Income");
+  parallel.append("g")
+    .classed("y axis", true)
+    .call(parallel_Y1Axis)
+    .append("text")
+    .classed("label", true)
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .style("fill", "black")
+    .text("Median Family Income");
 
-    parallel.append("g")
-        .attr("transform", "translate(200,0)")
-        .classed("y axis", true)
-        .call(parallel_Y2Axis)
-        .append("text")
-        .classed("label", true)
-        .attr("transform", "rotate(-90)")
-        .attr("y", 50)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("fill", "black")
-        .text("Average Cost");
+  parallel.append("g")
+    .attr("transform", "translate(200,0)")
+    .classed("y axis", true)
+    .call(parallel_Y2Axis)
+    .append("text")
+    .classed("label", true)
+    .attr("transform", "rotate(-90)")
+    .attr("y", 50)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .style("fill", "black")
+    .text("Average Cost");
 
-    parallel.append("g")
-        .attr("transform", "translate(400,0)")
-        .classed("y axis", true)
-        .call(parallel_Y3Axis)
-        .append("text")
-        .classed("label", true)
-        .attr("transform", "rotate(-90)")
-        .attr("y", 50)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("fill", "black")
-        .text("Median Earnings");
+  parallel.append("g")
+    .attr("transform", "translate(400,0)")
+    .classed("y axis", true)
+    .call(parallel_Y3Axis)
+    .append("text")
+    .classed("label", true)
+    .attr("transform", "rotate(-90)")
+    .attr("y", 50)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .style("fill", "black")
+    .text("Median Earnings");
 
 
-    // var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
-    //
-    // var parallelPlot = parallel.selectAll(".line")
-    //     .data(data)
-    //     .enter()
-    //     .append("path")
-    //     .attr("d", parallelFunction(data));
+  // var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
+  //
+  // var parallelPlot = parallel.selectAll(".line")
+  //     .data(data)
+  //     .enter()
+  //     .append("path")
+  //     .attr("d", parallelFunction(data));
 
-    //End
+  //End
 
   function scoreplots(data) {
     d3.selectAll("circle").remove();
@@ -438,51 +384,8 @@ d3.csv(fileName, function(error, data) {
           return d["SAT Average"] == sat && d["ACT Median"] == act;
         })
         .classed("clicked", true);
-
       schooldetails(d, i);
-
-      white = +d['% White'];
-      black = +d['% Black'];
-      hispanic = +d['% Hispanic'];
-      asian = +d['% Asian'];
-      indian = +d['% American Indian'];
-      pacific = +d['% Pacific Islander'];
-      biracial = +d['% Biracial'];
-      nonresident = +d['% Nonresident Aliens'];
-      totalRace = [{
-          race: "White",
-          value: white
-        },
-        {
-          race: "Black",
-          value: black
-        },
-        {
-          race: "Hispanic",
-          value: hispanic
-        },
-        {
-          race: "Asian",
-          value: asian
-        },
-        {
-          race: "American Indian",
-          value: indian
-        },
-        {
-          race: "Pacific Islander",
-          value: pacific
-        },
-        {
-          race: "Biracial",
-          value: biracial
-        },
-        {
-          race: "Nonresident Alien",
-          value: nonresident
-        }
-      ];
-      racepie(totalRace);
+      racepie(raceratio(d));
       barChart(d);
     }
 
@@ -527,49 +430,52 @@ d3.csv(fileName, function(error, data) {
   };
 
   function barChart(d) {
-      //bar chart
-      var barchart = d3.select('#barchart')
-          .append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-      //populate axes
-      var barYScale = d3.scaleLinear().domain([0, 1]).range([height, 0]);
-      var schools = [d['Name'], "Average"];
-      var barXScale = d3.scaleBand().domain(schools).range([0, width]);
-      var barYAxis = d3.axisLeft().scale(barYScale);
-      var barXAxis = d3.axisBottom().scale(barXScale);
-      barchart.append("g")
-          .classed("y axis", true)
-          .call(barYAxis)
-          .append("text")
-          .classed("label", true)
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", ".71em")
-          .style("text-anchor", "end")
-          .style("fill", "black")
-          .text("Admission Rate");
+    //bar chart
+    var barchart = d3.select('#barchart')
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    //populate axes
+    var barYScale = d3.scaleLinear().domain([0, 1]).range([height, 0]);
+    var schools = [d['Name'], "Average"];
+    var barXScale = d3.scaleBand().domain(schools).range([0, width]);
+    var barYAxis = d3.axisLeft().scale(barYScale);
+    var barXAxis = d3.axisBottom().scale(barXScale);
+    barchart.append("g")
+      .classed("y axis", true)
+      .call(barYAxis)
+      .append("text")
+      .classed("label", true)
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .style("fill", "black")
+      .text("Admission Rate");
 
-      barchart.append("g")
-          .call(barXAxis)
-          .attr("transform","translate(0,250)");
-      //append specific school bar
-      //TODO: some fix height scale
     barchart.append("g")
-          .append("rect")
-          .attr("transform", "translate(35,"+barYScale(d['Admission Rate'])+")")
-          .attr("height",(barYScale(d['Admission Rate'])))
-          .attr("width", "50")
-          .attr("fill", scolor(d.Locale));
+      .call(barXAxis)
+      .attr("transform", "translate(0,250)");
+    //append specific school bar
+    //TODO: some fix height scale
+    barchart.append("g")
+      .append("rect")
+      .attr("transform", "translate(35," + barYScale(d['Admission Rate']) + ")")
+      .attr("height", (barYScale(d['Admission Rate'])))
+      .attr("width", "50")
+      .attr("fill", scolor(d.Locale));
     //append average bar
-      var mean = d3.mean(data,function(d) { return +d['Admission Rate']});
+    var mean = d3.mean(data, function(d) {
+      return +d['Admission Rate']
+    });
     barchart.append("g")
-        .append("rect")
-        .attr("transform", "translate(155,"+barYScale(mean)+")")
-        .attr("height",(barYScale(mean)))
-        .attr("width", "50");  }
+      .append("rect")
+      .attr("transform", "translate(155," + barYScale(mean) + ")")
+      .attr("height", (barYScale(mean)))
+      .attr("width", "50");
+  }
 
   scoreplots(data);
 
@@ -595,23 +501,6 @@ d3.csv(fileName, function(error, data) {
   piechart.append("g")
     .attr("class", "lines");
 
-  var pie = d3.pie()
-    .sort(null)
-    .value(function(d) {
-      return d.value;
-    });
-
-  var arc = d3.arc()
-    .outerRadius(radius * 0.8)
-    .innerRadius(radius * 0.4);
-
-  var outerArc = d3.arc()
-    .innerRadius(radius * 0.9)
-    .outerRadius(radius * 0.9);
-
-  var legendRectSize = (radius * 0.05);
-  var legendSpacing = radius * 0.02;
-
   var pielegend = d3.select("#piechart")
     .append("svg")
     .attr("class", 'pielegend')
@@ -619,15 +508,39 @@ d3.csv(fileName, function(error, data) {
     .attr("height", 300)
     .attr("transform", "translate(" + 10 + "," + 20 + ")");
 
-  var ptooltip = d3.select("#piechart")
-    .append("div")
-    .classed("tooltip", true)
-    .style("opacity", 0);
-
   function racepie(data) {
-    console.log(data);
+    var pie = d3.pie()
+      .sort(null)
+      .value(function(d) {
+        return d.value;
+      });
+
+    var arc = d3.arc()
+      .outerRadius(radius * 0.8)
+      .innerRadius(radius * 0.4);
+
+    var outerArc = d3.arc()
+      .innerRadius(radius * 0.9)
+      .outerRadius(radius * 0.9);
+
+    var legendRectSize = (radius * 0.05);
+    var legendSpacing = radius * 0.02;
+
+    var ptooltip = d3.select("#piechart")
+      .append("div")
+      .classed("tooltip", true)
+      .style("opacity", 0);
 
     var slice = piechart
+      .select(".slices")
+      .selectAll("path.slice")
+      .data(pie(data), function(d) {
+        return d.data.race;
+      });
+
+    slice.remove();
+
+    slice = piechart
       .select(".slices")
       .selectAll("path.slice")
       .data(pie(data), function(d) {
@@ -643,14 +556,14 @@ d3.csv(fileName, function(error, data) {
       .attr("class", "slice")
       .transition().duration(1000)
       .attr("d", arc);
-      // .attrTween("d", function(d) {
-      //   this._current = this._current || d;
-      //   var interpolate = d3.interpolate(this._current, d);
-      //   this._current = interpolate(0);
-      //   return function(t) {
-      //     return arc(interpolate(t));
-      //   };
-      // });
+    // .attrTween("d", function(d) {
+    //   this._current = this._current || d;
+    //   var interpolate = d3.interpolate(this._current, d);
+    //   this._current = interpolate(0);
+    //   return function(t) {
+    //     return arc(interpolate(t));
+    //   };
+    // });
 
     // slice
     //   .on("mouseover", function(d) {
@@ -701,6 +614,49 @@ d3.csv(fileName, function(error, data) {
       });
   }
 
-  racepie(totalRace);
+  function raceratio(d) {
+    white = +d['% White'];
+    black = +d['% Black'];
+    hispanic = +d['% Hispanic'];
+    asian = +d['% Asian'];
+    indian = +d['% American Indian'];
+    pacific = +d['% Pacific Islander'];
+    biracial = +d['% Biracial'];
+    nonresident = +d['% Nonresident Aliens'];
+    totalRace = [{
+        race: "White",
+        value: white
+      },
+      {
+        race: "Black",
+        value: black
+      },
+      {
+        race: "Hispanic",
+        value: hispanic
+      },
+      {
+        race: "Asian",
+        value: asian
+      },
+      {
+        race: "American Indian",
+        value: indian
+      },
+      {
+        race: "Pacific Islander",
+        value: pacific
+      },
+      {
+        race: "Biracial",
+        value: biracial
+      },
+      {
+        race: "Nonresident Alien",
+        value: nonresident
+      }
+    ];
+    return totalRace;
+  }
 
 });
