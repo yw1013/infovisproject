@@ -441,6 +441,7 @@ d3.csv(fileName, function(error, data) {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       //populate axes
       var barYScale = d3.scaleLinear().domain([0, 1]).range([height, 0]);
+      var barYScaleData = d3.scaleLinear().domain([0, 1]).range([0, height]);
       var schools = [d['Name'], "Average"];
       var barXScale = d3.scaleBand().domain(schools).range([0, width]);
       var barYAxis = d3.axisLeft().scale(barYScale);
@@ -465,7 +466,7 @@ d3.csv(fileName, function(error, data) {
     barchart.append("g")
           .append("rect")
           .attr("transform", "translate(35,"+barYScale(d['Admission Rate'])+")")
-          .attr("height",(barYScale(d['Admission Rate'])))
+          .attr("height",(barYScaleData(d['Admission Rate'])))
           .attr("width", "50")
           .attr("fill", color(d.Locale));
     //append average bar
@@ -473,7 +474,7 @@ d3.csv(fileName, function(error, data) {
     barchart.append("g")
         .append("rect")
         .attr("transform", "translate(155,"+barYScale(mean)+")")
-        .attr("height",(barYScale(mean)))
+        .attr("height",(barYScaleData(mean)))
         .attr("width", "50");  }
 
   scoreplots(data);
