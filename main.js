@@ -1,4 +1,5 @@
 var fileName = "./colleges.csv";
+
 var margin = {
     top: 20,
     right: 20,
@@ -10,7 +11,6 @@ var margin = {
 
 d3.csv(fileName, function(error, data) {
   if (error) throw serror;
-
   // dropdowns
   var dropregion = d3.select("#dropregion"),
     droplocale = d3.select("#droplocale"),
@@ -209,7 +209,7 @@ d3.csv(fileName, function(error, data) {
   var xAxis = d3.axisBottom().scale(xScale);
   var yAxis = d3.axisLeft().scale(yScale);
 
-  var color = d3.scaleOrdinal(d3.schemeCategory20);
+  var scolor = d3.scaleOrdinal(d3.schemeCategory20);
 
   var score = d3.select("#score")
     .append("svg")
@@ -252,78 +252,76 @@ d3.csv(fileName, function(error, data) {
   /*
     Parallel coordinates plot
    */
-    var MedFamIncome_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {return d['Median Family Income'];})]).range([height, 0]);
-    var AverageCost_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {return d['Average Cost'];})]).range([height, 0]);
-    var MedEarnings_YScale = d3.scaleLinear().domain([0,d3.max(data, function(d) {return d['Median Earnings 8 years After Entry'];})]).range([height, 0]);
+  var MedFamIncome_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+    return d['Median Family Income'];
+  })]).range([height, 0]);
+  var AverageCost_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+    return d['Average Cost'];
+  })]).range([height, 0]);
+  var MedEarnings_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+    return d['Median Earnings 8 years After Entry'];
+  })]).range([height, 0]);
 
 
-    var parallel_Y1Axis = d3.axisLeft().scale(MedFamIncome_YScale);
-    var parallel_Y2Axis = d3.axisRight().scale(AverageCost_YScale);
-    var parallel_Y3Axis = d3.axisRight().scale(MedEarnings_YScale);
+  var parallel_Y1Axis = d3.axisLeft().scale(MedFamIncome_YScale);
+  var parallel_Y2Axis = d3.axisRight().scale(AverageCost_YScale);
+  var parallel_Y3Axis = d3.axisRight().scale(MedEarnings_YScale);
 
-    var parallel = d3.select("#parallel")
-        .append("svg")
-        .attr("width", width*2 + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    parallel.append("g")
-        .classed("y axis", true)
-        .call(parallel_Y1Axis)
-        .append("text")
-        .classed("label", true)
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("fill", "black")
-        .text("Median Family Income");
-
-    parallel.append("g")
-        .attr("transform", "translate(200,0)")
-        .classed("y axis", true)
-        .call(parallel_Y2Axis)
-        .append("text")
-        .classed("label", true)
-        .attr("transform", "rotate(-90)")
-        .attr("y", 50)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("fill", "black")
-        .text("Average Cost");
-
-    parallel.append("g")
-        .attr("transform", "translate(400,0)")
-        .classed("y axis", true)
-        .call(parallel_Y3Axis)
-        .append("text")
-        .classed("label", true)
-        .attr("transform", "rotate(-90)")
-        .attr("y", 50)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("fill", "black")
-        .text("Median Earnings");
-
-
-    var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
-
-    var parallelPlot = parallel.selectAll(".line")
-        .data(data)
-        .enter()
-        .append("path")
-        .attr("d", parallelFunction(data));
-
-    //End
-
-  var pie = d3.select("#piechart")
+  var parallel = d3.select("#parallel")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
+    .attr("width", width * 2 + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  parallel.append("g")
+    .classed("y axis", true)
+    .call(parallel_Y1Axis)
+    .append("text")
+    .classed("label", true)
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .style("fill", "black")
+    .text("Median Family Income");
+
+  parallel.append("g")
+    .attr("transform", "translate(200,0)")
+    .classed("y axis", true)
+    .call(parallel_Y2Axis)
+    .append("text")
+    .classed("label", true)
+    .attr("transform", "rotate(-90)")
+    .attr("y", 50)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .style("fill", "black")
+    .text("Average Cost");
+
+  parallel.append("g")
+    .attr("transform", "translate(400,0)")
+    .classed("y axis", true)
+    .call(parallel_Y3Axis)
+    .append("text")
+    .classed("label", true)
+    .attr("transform", "rotate(-90)")
+    .attr("y", 50)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .style("fill", "black")
+    .text("Median Earnings");
+
+
+  // var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
+  //
+  // var parallelPlot = parallel.selectAll(".line")
+  //     .data(data)
+  //     .enter()
+  //     .append("path")
+  //     .attr("d", parallelFunction(data));
+
+  //End
 
   function scoreplots(data) {
     d3.selectAll("circle").remove();
@@ -333,7 +331,7 @@ d3.csv(fileName, function(error, data) {
       d["ACT Median"] = +d["ACT Median"];
     });
 
-    var tooltip = d3.select("#score").append("div")
+    var stooltip = d3.select("#score").append("div")
       .classed("tooltip", true)
       .style("opacity", 0);
 
@@ -352,7 +350,7 @@ d3.csv(fileName, function(error, data) {
         return yScale(d["ACT Median"]);
       })
       .style("fill", function(d) {
-        return color(d.Locale);
+        return scolor(d.Locale);
       })
       .on("mouseover", scoremouseover)
       .on("mouseout", scoremouseout)
@@ -360,7 +358,7 @@ d3.csv(fileName, function(error, data) {
 
     function scoremouseover(d) {
       var html = d.Name + "<br/>" + d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
-      tooltip.html(html)
+      stooltip.html(html)
         .style("left", (d3.event.pageX + 15) + "px")
         .style("top", (d3.event.pageY - 28) + "px")
         .transition()
@@ -369,7 +367,7 @@ d3.csv(fileName, function(error, data) {
     }
 
     function scoremouseout(d) {
-      tooltip.transition()
+      stooltip.transition()
         .duration(300)
         .style("opacity", 0);
     }
@@ -386,13 +384,13 @@ d3.csv(fileName, function(error, data) {
           return d["SAT Average"] == sat && d["ACT Median"] == act;
         })
         .classed("clicked", true);
-
       schooldetails(d, i);
+      racepie(raceratio(d));
       barChart(d);
     }
 
     var legend = svglegend.selectAll(".legend")
-      .data(color.domain())
+      .data(scolor.domain())
       .enter()
       .append("g")
       .attr("class", "legend")
@@ -404,14 +402,14 @@ d3.csv(fileName, function(error, data) {
       .attr("x", 0)
       .attr("width", 10)
       .attr("height", 10)
-      .style("fill", color);
+      .style("fill", scolor);
 
     legend.append("text")
       .attr("x", 15)
       .attr("y", 5)
       .attr("dy", ".35em")
       .style("text-anchor", "start")
-      .style("fill", color)
+      .style("fill", scolor)
       .text(function(d) {
         return d;
       });
@@ -462,15 +460,16 @@ d3.csv(fileName, function(error, data) {
           .call(barXAxis)
           .attr("transform","translate(0,250)");
       //append specific school bar
-      //TODO: some fix height scale
     barchart.append("g")
           .append("rect")
           .attr("transform", "translate(35,"+barYScale(d['Admission Rate'])+")")
           .attr("height",(barYScaleData(d['Admission Rate'])))
           .attr("width", "50")
-          .attr("fill", color(d.Locale));
+          .attr("fill", scolor(d['Locale']));
     //append average bar
-      var mean = d3.mean(data,function(d) { return +d['Admission Rate']});
+    var mean = d3.mean(data, function(d) {
+      return +d['Admission Rate']
+    });
     barchart.append("g")
         .append("rect")
         .attr("transform", "translate(155,"+barYScale(mean)+")")
@@ -478,5 +477,185 @@ d3.csv(fileName, function(error, data) {
         .attr("width", "50");  }
 
   scoreplots(data);
+
+  var pwidth = 200,
+    pheight = 200,
+    radius = Math.min(width, height) / 2;
+
+  var pcolor = d3.scaleOrdinal(d3.schemeCategory20b);
+
+  var piechart = d3.select("#piechart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + 150 + "," + 150 + ")");
+
+  piechart.append("g")
+    .attr("class", "slices");
+  piechart.append("g")
+    .attr("class", "labelName");
+  piechart.append("g")
+    .attr("class", "labelValue");
+  piechart.append("g")
+    .attr("class", "lines");
+
+  var pielegend = d3.select("#piechart")
+    .append("svg")
+    .attr("class", 'pielegend')
+    .attr("width", 100)
+    .attr("height", 300)
+    .attr("transform", "translate(" + 10 + "," + 20 + ")");
+
+  function racepie(data) {
+    var pie = d3.pie()
+      .sort(null)
+      .value(function(d) {
+        return d.value;
+      });
+
+    var arc = d3.arc()
+      .outerRadius(radius * 0.8)
+      .innerRadius(radius * 0.4);
+
+    var outerArc = d3.arc()
+      .innerRadius(radius * 0.9)
+      .outerRadius(radius * 0.9);
+
+    var legendRectSize = (radius * 0.05);
+    var legendSpacing = radius * 0.02;
+
+    var ptooltip = d3.select("#piechart")
+      .append("div")
+      .classed("tooltip", true)
+      .style("opacity", 0);
+
+    var slice = piechart
+      .select(".slices")
+      .selectAll("path.slice")
+      .data(pie(data), function(d) {
+        return d.data.race;
+      });
+
+    slice.remove();
+
+    slice = piechart
+      .select(".slices")
+      .selectAll("path.slice")
+      .data(pie(data), function(d) {
+        return d.data.race;
+      });
+
+    slice.enter()
+      .insert("path")
+      .style("fill", function(d) {
+        return pcolor(d.data.race);
+      })
+      .style("opacity", 0.7)
+      .attr("class", "slice")
+      .transition().duration(1000)
+      .attr("d", arc);
+    // .attrTween("d", function(d) {
+    //   this._current = this._current || d;
+    //   var interpolate = d3.interpolate(this._current, d);
+    //   this._current = interpolate(0);
+    //   return function(t) {
+    //     return arc(interpolate(t));
+    //   };
+    // });
+
+    // slice
+    //   .on("mouseover", function(d) {
+    //     console.log("hi");
+    //
+    //     var html = (d.data.race) + "<br>" + (d.data.value) + "%";
+    //     ptooltip.html(html)
+    //       .style("left", (d3.event.pageX + 15) + "px")
+    //       .style("top", (d3.event.pageY - 28) + "px")
+    //       .transition()
+    //       .duration(200)
+    //       .style("opacity", .9);
+    //   })
+    //   .on("mouseout", function(d) {
+    //     ptooltip.transition()
+    //       .duration(300)
+    //       .style("opacity", 0);
+    //
+    //
+    //   });
+
+    slice.exit()
+      .remove();
+
+    var racelegend = pielegend.selectAll(".legend")
+      .data(pcolor.domain()).enter()
+      .append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) {
+        return "translate(0," + i * 20 + ")";
+      });
+
+    racelegend.append("rect")
+      .attr("x", 0)
+      .attr("width", 10)
+      .attr("height", 10)
+      .style("fill", pcolor)
+      .style('stroke', pcolor);
+
+    racelegend.append("text")
+      .attr("x", 15)
+      .attr("y", 5)
+      .attr("dy", ".35em")
+      .style("text-anchor", "start")
+      .style("fill", pcolor)
+      .text(function(d) {
+        return d;
+      });
+  }
+
+  function raceratio(d) {
+    white = +d['% White'];
+    black = +d['% Black'];
+    hispanic = +d['% Hispanic'];
+    asian = +d['% Asian'];
+    indian = +d['% American Indian'];
+    pacific = +d['% Pacific Islander'];
+    biracial = +d['% Biracial'];
+    nonresident = +d['% Nonresident Aliens'];
+    totalRace = [{
+        race: "White",
+        value: white
+      },
+      {
+        race: "Black",
+        value: black
+      },
+      {
+        race: "Hispanic",
+        value: hispanic
+      },
+      {
+        race: "Asian",
+        value: asian
+      },
+      {
+        race: "American Indian",
+        value: indian
+      },
+      {
+        race: "Pacific Islander",
+        value: pacific
+      },
+      {
+        race: "Biracial",
+        value: biracial
+      },
+      {
+        race: "Nonresident Alien",
+        value: nonresident
+      }
+    ];
+    return totalRace;
+  }
 
 });

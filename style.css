@@ -45,22 +45,20 @@ body {
   padding: 5px;
 }
 
-path.slice{
-	stroke-width:2px;
+path.slice {
+  stroke-width: 2px;
 }
 
-polyline{
-	opacity: .3;
-	stroke: black;
-	stroke-width: 2px;
-	fill: none;
+polyline {
+  opacity: .3;
+  stroke: black;
+  stroke-width: 2px;
+  fill: none;
 }
 
-.labelValue
-{
-	font-size: 60%;
-	opacity: .5;
-
+.labelValue {
+  font-size: 60%;
+  opacity: .5;
 }
 
 .background path {
