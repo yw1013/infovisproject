@@ -105,6 +105,7 @@ d3.csv(fileName, function(error, data) {
     });
 
     scoreplots(selectRegion);
+    parallelplots(selectRegion);
 
     droplocale.selectAll("option")
       .remove();
@@ -154,6 +155,7 @@ d3.csv(fileName, function(error, data) {
     })
 
     scoreplots(selectLocale);
+    parallelplots(selectRegion);
 
     dropschool.selectAll("option")
       .remove();
@@ -253,15 +255,19 @@ d3.csv(fileName, function(error, data) {
   /*
     Parallel coordinates plot
    */
-  var MedFamIncome_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
-    return d['Median Family Income'];
-  })]).range([height, 0]);
-  var AverageCost_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
-    return d['Average Cost'];
-  })]).range([height, 0]);
-  var MedEarnings_YScale = d3.scaleLinear().domain([0, d3.max(data, function(d) {
-    return d['Median Earnings 8 years After Entry'];
-  })]).range([height, 0]);
+  var MedFamIncome_YScale = d3.scaleLinear().domain([0, 116850]).range([height, 0]);
+  var AverageCost_YScale = d3.scaleLinear().domain([0, 62636]).range([height, 0]);
+  var MedEarnings_YScale = d3.scaleLinear().domain([0, 125600]).range([height, 0]);
+
+    var MedFamIncome_YScaleData = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+        return d['Median Family Income'];
+    })]).range([0, height]);
+    var AverageCost_YScaleData = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+        return d['Average Cost'];
+    })]).range([0, height]);
+    var MedEarnings_YScaleData = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+        return d['Median Earnings 8 years After Entry'];
+    })]).range([0, height]);
 
 
   var parallel_Y1Axis = d3.axisLeft().scale(MedFamIncome_YScale);
@@ -273,6 +279,7 @@ d3.csv(fileName, function(error, data) {
     .attr("width", width * 2 + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
+    .classed("parallelplot", true)
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   parallel.append("g")
@@ -314,22 +321,22 @@ d3.csv(fileName, function(error, data) {
     .text("Median Earnings");
 
   function parallelplots(data) {
-      d3.selectAll("line").remove();
-
-      var parallel_plot = d3.select("#parallel")
-
+      d3.selectAll("path").remove();
+      var parallel_plot = parallel.selectAll(".line")
+          .data(data)
+          .enter()
+          .append("path")
+          .classed("line", true)
+          .attr("d", function(d) {
+              return( "M 0,"+MedFamIncome_YScale(d['Median Family Income'])+" 200,"+AverageCost_YScale(d['Average Cost'])+" 400,"+MedEarnings_YScale(d['Median Earnings 8 years After Entry']));
+          })
+          .style("stroke", function(d) {
+              return scolor(d['Locale']);
+          })
+          .style("fill", "none")
+          .style("opacity", ".2");
 
   }
-
-  // var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
-  //
-  // var parallelPlot = parallel.selectAll(".line")
-  //     .data(data)
-  //     .enter()
-  //     .append("path")
-  //     .attr("d", parallelFunction(data));
-
-  //End
 
     //bar chart
     var barchart = d3.select('#barchart')
@@ -495,6 +502,7 @@ d3.csv(fileName, function(error, data) {
   }
 
   scoreplots(data);
+  parallelplots(data);
 
   var pwidth = 200,
     pheight = 200,
