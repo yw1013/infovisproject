@@ -200,6 +200,7 @@ d3.csv(fileName, function(error, data) {
       return d["Name"] == currentSchool;
     })
     scoreplots(selectSchool);
+    parallelplots(selectSchool);
   })
 
   //score scatter plot
@@ -279,7 +280,7 @@ d3.csv(fileName, function(error, data) {
     .call(parallel_Y1Axis)
     .append("text")
     .classed("label", true)
-    .attr("transform", "rotate(-90)")
+    .attr("transform", "translate(50,-20)")
     .attr("y", 6)
     .attr("dy", ".71em")
     .style("text-anchor", "end")
@@ -312,6 +313,13 @@ d3.csv(fileName, function(error, data) {
     .style("fill", "black")
     .text("Median Earnings");
 
+  function parallelplots(data) {
+      d3.selectAll("line").remove();
+
+      var parallel_plot = d3.select("#parallel")
+
+
+  }
 
   // var parallelFunction = d3.line().x(function(d){return d.x}).y(function(d){return d.y}).interpolate("linear");
   //
@@ -322,6 +330,30 @@ d3.csv(fileName, function(error, data) {
   //     .attr("d", parallelFunction(data));
 
   //End
+
+    //bar chart
+    var barchart = d3.select('#barchart')
+        .append("svg")
+        .classed("bargraph", true)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    //populate axes
+    var barYScale = d3.scaleLinear().domain([0, 1]).range([height, 0]);
+    var barYScaleData = d3.scaleLinear().domain([0, 1]).range([0, height]);
+    var barYAxis = d3.axisLeft().scale(barYScale);
+    barchart.append("g")
+        .classed("y axis", true)
+        .call(barYAxis)
+        .append("text")
+        .classed("label", true)
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .style("fill", "black")
+        .text("Admission Rate");
 
   function scoreplots(data) {
     d3.selectAll("circle").remove();
@@ -430,51 +462,37 @@ d3.csv(fileName, function(error, data) {
   };
 
   function barChart(d) {
-      //bar chart
-      var barchart = d3.select('#barchart')
-          .append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-      //populate axes
-      var barYScale = d3.scaleLinear().domain([0, 1]).range([height, 0]);
-      var barYScaleData = d3.scaleLinear().domain([0, 1]).range([0, height]);
-      var schools = [d['Name'], "Average"];
-      var barXScale = d3.scaleBand().domain(schools).range([0, width]);
-      var barYAxis = d3.axisLeft().scale(barYScale);
-      var barXAxis = d3.axisBottom().scale(barXScale);
-      barchart.append("g")
-          .classed("y axis", true)
-          .call(barYAxis)
-          .append("text")
-          .classed("label", true)
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", ".71em")
-          .style("text-anchor", "end")
-          .style("fill", "black")
-          .text("Admission Rate");
 
-      barchart.append("g")
-          .call(barXAxis)
-          .attr("transform","translate(0,250)");
+    d3.selectAll(".bar").remove();
+
       //append specific school bar
-    barchart.append("g")
+      d3.select(".bargraph")
           .append("rect")
-          .attr("transform", "translate(35,"+barYScale(d['Admission Rate'])+")")
+          .classed("bar", true)
+          .attr("transform", "translate(75,"+(20+barYScale(d['Admission Rate']))+")")
           .attr("height",(barYScaleData(d['Admission Rate'])))
           .attr("width", "50")
           .attr("fill", scolor(d['Locale']));
-    //append average bar
-    var mean = d3.mean(data, function(d) {
-      return +d['Admission Rate']
-    });
-    barchart.append("g")
-        .append("rect")
-        .attr("transform", "translate(155,"+barYScale(mean)+")")
-        .attr("height",(barYScaleData(mean)))
-        .attr("width", "50");  }
+      //append average bar
+      var mean = d3.mean(data, function(d) {
+          return +d['Admission Rate']
+      });
+      d3.select(".bargraph")
+          .append("rect")
+          .classed("bar", true)
+          .attr("transform", "translate(195,"+(20+barYScale(mean))+")")
+          .attr("height",(barYScaleData(mean)))
+          .attr("width", "50");
+      var schools = [d['Name'], "Average"];
+      var barXScale = d3.scaleBand().domain(schools).range([0, width]);
+      var barXAxis = d3.axisBottom().scale(barXScale);
+
+
+      barchart.append("g")
+          .call(barXAxis)
+          .attr("transform","translate(0,250)")
+          .classed("bar", true);
+  }
 
   scoreplots(data);
 

@@ -6,6 +6,9 @@
 body {
   font: 12px sans-serif;
 }
+div {
+  float: left;
+}
 
 .tick>line {
   fill: none;
