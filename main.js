@@ -500,7 +500,7 @@ d3.csv(fileName, function(error, data) {
     pheight = 200,
     radius = Math.min(width, height) / 2;
 
-  var pcolor = d3.scaleOrdinal(d3.schemeCategory20b);
+  var pcolor = d3.scaleOrdinal(d3.schemeCategory10);
 
   var piechart = d3.select("#piechart")
     .append("svg")
@@ -511,12 +511,6 @@ d3.csv(fileName, function(error, data) {
 
   piechart.append("g")
     .attr("class", "slices");
-  piechart.append("g")
-    .attr("class", "labelName");
-  piechart.append("g")
-    .attr("class", "labelValue");
-  piechart.append("g")
-    .attr("class", "lines");
 
   var pielegend = d3.select("#piechart")
     .append("svg")
@@ -536,13 +530,6 @@ d3.csv(fileName, function(error, data) {
       .outerRadius(radius * 0.8)
       .innerRadius(radius * 0.4);
 
-    var outerArc = d3.arc()
-      .innerRadius(radius * 0.9)
-      .outerRadius(radius * 0.9);
-
-    var legendRectSize = (radius * 0.05);
-    var legendSpacing = radius * 0.02;
-
     var ptooltip = d3.select("#piechart")
       .append("div")
       .classed("tooltip", true)
@@ -550,60 +537,38 @@ d3.csv(fileName, function(error, data) {
 
     var slice = piechart
       .select(".slices")
-      .selectAll("path.slice")
-      .data(pie(data), function(d) {
-        return d.data.race;
-      });
+      .selectAll("path.slice");
 
     slice.remove();
 
     slice = piechart
       .select(".slices")
       .selectAll("path.slice")
-      .data(pie(data), function(d) {
-        return d.data.race;
-      });
-
-    slice.enter()
-      .insert("path")
+      .data(pie(data))
+      .enter()
+      .append("g")
+      .append("path")
+      .attr("d", arc)
       .style("fill", function(d) {
         return pcolor(d.data.race);
       })
-      .style("opacity", 0.7)
-      .attr("class", "slice")
-      .transition().duration(1000)
-      .attr("d", arc);
-    // .attrTween("d", function(d) {
-    //   this._current = this._current || d;
-    //   var interpolate = d3.interpolate(this._current, d);
-    //   this._current = interpolate(0);
-    //   return function(t) {
-    //     return arc(interpolate(t));
-    //   };
-    // });
-
-    // slice
-    //   .on("mouseover", function(d) {
-    //     console.log("hi");
-    //
-    //     var html = (d.data.race) + "<br>" + (d.data.value) + "%";
-    //     ptooltip.html(html)
-    //       .style("left", (d3.event.pageX + 15) + "px")
-    //       .style("top", (d3.event.pageY - 28) + "px")
-    //       .transition()
-    //       .duration(200)
-    //       .style("opacity", .9);
-    //   })
-    //   .on("mouseout", function(d) {
-    //     ptooltip.transition()
-    //       .duration(300)
-    //       .style("opacity", 0);
-    //
-    //
-    //   });
-
-    slice.exit()
-      .remove();
+      // .style("opacity", 0.7)
+      .style("stroke", 'white')
+      .on("mouseover", function(d) {
+        console.log("hi");
+        var html = (d.data.race) + "<br>" + (d.data.value) + "%";
+        ptooltip.html(html)
+          .style("left", (d3.event.pageX + 15) + "px")
+          .style("top", (d3.event.pageY - 28) + "px")
+          .transition()
+          .duration(200)
+          .style("opacity", .9);
+      })
+      .on("mouseout", function(d) {
+        ptooltip.transition()
+          .duration(300)
+          .style("opacity", 0);
+      });
 
     var racelegend = pielegend.selectAll(".legend")
       .data(pcolor.domain()).enter()
