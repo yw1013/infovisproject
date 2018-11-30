@@ -540,6 +540,7 @@ d3.csv(fileName, function(error, data) {
         var sat = d["SAT Average"],
             act = d["ACT Median"],
             name = d["Name"],
+            admissionrate = d["Admission Rate"],
             familyincome = d['Median Family Income'],
             averagecost = d['Average Cost'],
             salary = d['Median Earnings 8 years After Entry'];
@@ -550,6 +551,8 @@ d3.csv(fileName, function(error, data) {
             .text(sat);
         d3.select("#act")
             .text(act);
+        d3.select("#admissionrate")
+            .text(admissionrate);
         d3.select("#familyincome")
             .text(familyincome);
         d3.select("#averagecost")
@@ -652,7 +655,6 @@ d3.csv(fileName, function(error, data) {
       // .style("opacity", 0.7)
       .style("stroke", 'white')
       .on("mouseover", function(d) {
-        console.log("hi");
         var html = (d.data.race) + "<br>" + (d.data.value) + "%";
         ptooltip.html(html)
           .style("left", (d3.event.pageX + 15) + "px")
