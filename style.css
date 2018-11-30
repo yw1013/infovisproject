@@ -51,3 +51,8 @@ div {
 path.slice {
   stroke-width: 1px;
 }
+
+.line_hover {
+  stroke-width: 2px;
+  opacity:1;
+}

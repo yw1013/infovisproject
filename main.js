@@ -155,7 +155,7 @@ d3.csv(fileName, function(error, data) {
     })
 
     scoreplots(selectLocale);
-    parallelplots(selectRegion);
+    parallelplots(selectLocale);
 
     dropschool.selectAll("option")
       .remove();
@@ -280,14 +280,14 @@ d3.csv(fileName, function(error, data) {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .classed("parallelplot", true)
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + 2*margin.left + "," + margin.top + ")");
 
   parallel.append("g")
     .classed("y axis", true)
     .call(parallel_Y1Axis)
     .append("text")
     .classed("label", true)
-    .attr("transform", "translate(50,-20)")
+    .attr("transform", "translate(50,260)")
     .attr("y", 6)
     .attr("dy", ".71em")
     .style("text-anchor", "end")
@@ -300,7 +300,7 @@ d3.csv(fileName, function(error, data) {
     .call(parallel_Y2Axis)
     .append("text")
     .classed("label", true)
-    .attr("transform", "rotate(-90)")
+    .attr("transform", "translate(45,215)")
     .attr("y", 50)
     .attr("dy", ".71em")
     .style("text-anchor", "end")
@@ -313,7 +313,7 @@ d3.csv(fileName, function(error, data) {
     .call(parallel_Y3Axis)
     .append("text")
     .classed("label", true)
-    .attr("transform", "rotate(-90)")
+    .attr("transform", "translate(45,215)")
     .attr("y", 50)
     .attr("dy", ".71em")
     .style("text-anchor", "end")
@@ -322,20 +322,62 @@ d3.csv(fileName, function(error, data) {
 
   function parallelplots(data) {
       d3.selectAll("path").remove();
+
+      var stooltip = d3.select("#parallel").append("div")
+          .classed("tooltip", true)
+          .style("opacity", 0);
+
       var parallel_plot = parallel.selectAll(".line")
           .data(data)
           .enter()
           .append("path")
           .classed("line", true)
-          .attr("d", function(d) {
-              return( "M 0,"+MedFamIncome_YScale(d['Median Family Income'])+" 200,"+AverageCost_YScale(d['Average Cost'])+" 400,"+MedEarnings_YScale(d['Median Earnings 8 years After Entry']));
+          .attr("d", function (d) {
+              return ("M 0," + MedFamIncome_YScale(d['Median Family Income']) + " 200," + AverageCost_YScale(d['Average Cost']) + " 400," + MedEarnings_YScale(d['Median Earnings 8 years After Entry']));
           })
-          .style("stroke", function(d) {
+          .style("stroke", function (d) {
               return scolor(d['Locale']);
           })
+          .style("stroke-width", "1.5px")
           .style("fill", "none")
-          .style("opacity", ".2");
+          .style("opacity", ".2")
+          .on("mouseover", parallelmouseover)
+          .on("mouseout", parallelmouseout)
+          .on("click", parallelclick);
 
+      function parallelmouseover(d) {
+
+          var html = d.Name + "<br/>" + d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
+          stooltip.html(html)
+              .style("left", (d3.event.pageX + 15) + "px")
+              .style("top", (d3.event.pageY - 28) + "px")
+              .transition()
+              .duration(200)
+              .style("opacity", .9);
+      }
+
+      function parallelmouseout(d) {
+        stooltip.transition()
+              .duration(300)
+              .style("opacity", 0);
+      }
+
+      function parallelclick(d, i) {
+          parallel.selectAll("path")
+              .filter(function (d) {
+                  return d["SAT Average"] != sat || d["ACT Median"] != act;
+              })
+              .classed("clicked", false);
+
+          parallel.selectAll("path")
+              .filter(function(d) {
+                  return d["SAT Average"] == sat && d["ACT Median"] == act;
+              })
+              .classed("clicked", true);
+          schooldetails(d, i);
+          racepie(raceratio(d));
+          barChart(d);
+      }
   }
 
     //bar chart
@@ -453,21 +495,30 @@ d3.csv(fileName, function(error, data) {
         return d;
       });
 
-    function schooldetails(d) {
-      var sat = d["SAT Average"],
-        act = d["ACT Median"],
-        name = d["Name"];
 
-      d3.select("#sat")
-        .text(sat);
-      d3.select("#act")
-        .text(act);
-      d3.select("#name")
-        .text(name);
-
-    }
   };
 
+    function schooldetails(d) {
+        var sat = d["SAT Average"],
+            act = d["ACT Median"],
+            name = d["Name"],
+            familyincome = d['Median Family Income'],
+            averagecost = d['Average Cost'],
+            salary = d['Median Earnings 8 years After Entry'];
+
+        d3.select("#name")
+            .text(name);
+        d3.select("#sat")
+            .text(sat);
+        d3.select("#act")
+            .text(act);
+        d3.select("#familyincome")
+            .text(familyincome);
+        d3.select("#averagecost")
+            .text(averagecost);
+        d3.select("#salary")
+            .text(salary);
+    }
   function barChart(d) {
 
     d3.selectAll(".bar").remove();
