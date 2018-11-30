@@ -321,64 +321,100 @@ d3.csv(fileName, function(error, data) {
     .text("Median Earnings");
 
   function parallelplots(data) {
-      d3.selectAll("path").remove();
+        d3.selectAll("path").remove();
 
-      var stooltip = d3.select("#parallel").append("div")
-          .classed("tooltip", true)
-          .style("opacity", 0);
+        var stooltip = d3.select("#parallel").append("div")
+            .classed("tooltip", true)
+            .style("opacity", 0);
 
-      var parallel_plot = parallel.selectAll(".line")
-          .data(data)
-          .enter()
-          .append("path")
-          .classed("line", true)
-          .attr("d", function (d) {
-              return ("M 0," + MedFamIncome_YScale(d['Median Family Income']) + " 200," + AverageCost_YScale(d['Average Cost']) + " 400," + MedEarnings_YScale(d['Median Earnings 8 years After Entry']));
-          })
-          .style("stroke", function (d) {
-              return scolor(d['Locale']);
-          })
-          .style("stroke-width", "1.5px")
-          .style("fill", "none")
-          .style("opacity", ".2")
-          .on("mouseover", parallelmouseover)
-          .on("mouseout", parallelmouseout)
-          .on("click", parallelclick);
+        var parallel_plot = parallel.selectAll(".line")
+            .data(data)
+            .enter()
+            .append("path")
+            .classed("line", true)
+            .attr("d", function (d) {
+                return ("M 0," + MedFamIncome_YScale(d['Median Family Income']) + " 200," + AverageCost_YScale(d['Average Cost']) + " 400," + MedEarnings_YScale(d['Median Earnings 8 years After Entry']));
+            })
+            .style("stroke", function (d) {
+                return scolor(d['Locale']);
+            })
+            .style("stroke-width", "1.5px")
+            .style("fill", "none")
+            .style("opacity", ".2")
+            .on("mouseover", parallelmouseover)
+            .on("mouseout", parallelmouseout)
+            .on("click", parallelclick);
 
-      function parallelmouseover(d) {
+        function parallelmouseover(d) {
 
-          var html = d.Name + "<br/>" + d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
-          stooltip.html(html)
-              .style("left", (d3.event.pageX + 15) + "px")
-              .style("top", (d3.event.pageY - 28) + "px")
-              .transition()
-              .duration(200)
-              .style("opacity", .9);
-      }
+            var html = d.Name + "<br/>" + d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
+            stooltip.html(html)
+                .style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 28) + "px")
+                .transition()
+                .duration(200)
+                .style("opacity", .7);
+        }
 
-      function parallelmouseout(d) {
-        stooltip.transition()
-              .duration(300)
-              .style("opacity", 0);
-      }
+        function parallelmouseout(d) {
+            stooltip.transition()
+                .duration(300)
+                .style("opacity", 0);
+        }
 
-      function parallelclick(d, i) {
-          parallel.selectAll("path")
-              .filter(function (d) {
-                  return d["SAT Average"] != sat || d["ACT Median"] != act;
-              })
-              .classed("clicked", false);
+        function parallelclick(d, i) {
+            parallel.selectAll("path")
+                .filter(function (d) {
+                    return d["SAT Average"] != sat || d["ACT Median"] != act;
+                })
+                .classed("clicked", false);
 
-          parallel.selectAll("path")
-              .filter(function(d) {
-                  return d["SAT Average"] == sat && d["ACT Median"] == act;
-              })
-              .classed("clicked", true);
-          schooldetails(d, i);
-          racepie(raceratio(d));
-          barChart(d);
-      }
-  }
+            parallel.selectAll("path")
+                .filter(function(d) {
+                    return d["SAT Average"] == sat && d["ACT Median"] == act;
+                })
+                .classed("clicked", true);
+            schooldetails(d, i);
+            racepie(raceratio(d));
+            barChart(d);
+        }
+    }
+
+    function parallelplotone(d) {
+        var stooltip = d3.select("#parallel").append("div")
+            .classed("tooltip", true)
+            .style("opacity", 0);
+
+        d3.selectAll("path").remove();
+
+        var parallel_plot = parallel
+            .append("path")
+            .classed("line", true)
+            .attr("d", ("M 0," + MedFamIncome_YScale(d['Median Family Income']) + " 200," + AverageCost_YScale(d['Average Cost']) + " 400," + MedEarnings_YScale(d['Median Earnings 8 years After Entry'])))
+            .style("stroke", scolor(d['Locale']))
+            .style("stroke-width", "3px")
+            .style("fill", "none")
+            .style("opacity", "1")
+            .on("mouseover", parallelmouseover)
+            .on("mouseout", parallelmouseout)
+
+        function parallelmouseover() {
+
+            var html = d.Name + "<br/>" + d.Region + "<br/>" + "SAT Avg: " + d["SAT Average"] + "<br/>" + "ACT Med: " + d["ACT Median"] + "<br/>" + "Admission Rate: " + d["Admission Rate"];
+            stooltip.html(html)
+                .style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 28) + "px")
+                .transition()
+                .duration(200)
+                .style("opacity", .9);
+        }
+
+        function parallelmouseout() {
+            stooltip.transition()
+                .duration(300)
+                .style("opacity", 0);
+        }
+    }
 
     //bar chart
     var barchart = d3.select('#barchart')
@@ -465,6 +501,8 @@ d3.csv(fileName, function(error, data) {
           return d["SAT Average"] == sat && d["ACT Median"] == act;
         })
         .classed("clicked", true);
+      parallelplotone(d);
+
       schooldetails(d, i);
       racepie(raceratio(d));
       barChart(d);
